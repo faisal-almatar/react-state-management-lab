@@ -1,6 +1,15 @@
-const team = []
-const money = 100
-const zombieFighters =  [
+import './App.css'
+import { useState } from "react"
+
+
+
+
+
+const App = () => {
+  
+const [team, setTeam] = useState([]);
+const [money, setMoney] = useState(100);
+const [zombieFighters, setZombieFighters] = useState([
   {
     id: 1,
     name: 'Survivor',
@@ -81,32 +90,67 @@ const zombieFighters =  [
     agility: 6,
     img: 'https://pages.git.generalassemb.ly/modular-curriculum-all-courses/react-state-management-lab/assets/e41f26.png',
   },
-]
-
-
-
+]);
 const ZombieList = () => {
-  return(
-  <>
-    <li>
-      <div className="">
+const totalStrength = team.reduce((acc, zombie) => acc + zombie.strength, 0 )
+const totalAgility = team.reduce((acc, zombie) => acc + zombie.agility, 0 )
 
-    {zombieFighters.map((zombie)=>{
-      const {id, name,price,strength,agility,img,} = zombie
-      return `${id}`+`${name}`
-    })}
-    </div>
-    </li>
-  </>
-)}
-const App = () => {
+
+
+    return(
+    <>
+      {team.length == 0 ? <h1>Choose a Team </h1>: <h1>Team members</h1> }
+      {team.map((zombie) => (
+        <ul key={zombie.id}>
+          <li>Id: {zombie.id} Name: {zombie.name}</li>
+          <li>Agility: {zombie.agility} Strength: {zombie.strength} price: {zombie.price}$</li>
+          <img src={zombie.img} alt='img of a zombie'/>
+          <button onClick={() => handleRemoveFighter(zombie)}>Remove character</button>
+        </ul>
+      ))}
+      <h2>Total Strength: {totalStrength}</h2>
+      <h2>Total Agility: {totalAgility}</h2>  
+      
+      <li>
+      {zombieFighters.map((zombie)=> (
+        
+        <>
+        <ul>
+        <li>Id: {zombie.id} Name: {zombie.name}</li>
+        <li>Agility: {zombie.agility} Strength: {zombie.strength} price: {zombie.price}$</li>
+        <img src={zombie.img} alt='img of a zombie'/>
+        <button onClick={()=>{handleAddFighter(zombie)}}>Add character</button>  
+        </ul>
+        </>
+        ))}
+      </li>
+    </>
+  )}
+
+const handleAddFighter = (zombie) => {
+  if (money >= zombie.price) {
+    setTeam([...team, zombie]);
+    setMoney(money - zombie.price);
+    setZombieFighters(zombieFighters.filter(z => z.id !== zombie.id));
+  } else {
+    alert("Not enough money to add this fighter!");
+  }
+  console.log("Fighter added:", zombie);
+  console.log("Current team:", team);
+  console.log("Remaining money:", money);  
+}
+const handleRemoveFighter = (zombie) => {
+    setMoney(money + zombie.price)
+    setTeam(team.filter(z => z.id !== zombie.id))
+    setZombieFighters([...zombieFighters, zombie])
+  }
 
   return (
     <>
     <h1>Hello world!</h1>
-    <ul>
-    <ZombieList zombieFighters = {zombieFighters}/>
-    </ul>
+    <h2>You Currently Have {money}$</h2>
+    <button onClick={()=>{setMoney(money+100)}}>Cheat</button>
+    <ZombieList/> 
     </>
   );
 }
